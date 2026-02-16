@@ -1,2 +1,20 @@
-# SmallCalc2
-Build a simple very small calculator called SmallCalc2.0 with only addition capabilities. It should be done in just HTML and &lt;script> javascript tags. Keep it to less than 3 prompts if possible. No Tests. no Readmes
+# Keyboard Shortcuts Panel
+
+A web-based application for learning and practicing keyboard shortcuts.
+
+## Features
+
+- Real-time keyboard input detection
+- Visual display of pressed keys
+- Educational interface for learning shortcuts
+
+## Getting Started
+
+Simply open `index.html` in a modern web browser.
+
+## Development
+
+This is a vanilla JavaScript project with no build dependencies.
+
+### File Structure
+
