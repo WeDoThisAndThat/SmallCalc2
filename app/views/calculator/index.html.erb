@@ -1,0 +1,51 @@
+<div class="calculator-container">
+  <h1>Calculator</h1>
+
+  <% if flash[:alert] %>
+    <div class="flash alert"><%= flash[:alert] %></div>
+  <% end %>
+  <% if flash[:notice] %>
+    <div class="flash notice"><%= flash[:notice] %></div>
+  <% end %>
+
+  <div class="calculator">
+    <div class="display <%= 'empty' unless @display %>">
+      <%= @display || '0' %>
+    </div>
+
+    <%= form_with url: calculator_path, method: :post, local: true do |f| %>
+      <%= hidden_field_tag :current_value, @display %>
+      <%= hidden_field_tag :stored_value, @stored_value %>
+      <%= hidden_field_tag :operation, @operation %>
+
+      <div class="buttons">
+        <!-- Row 1: Clear and operators -->
+        <%= button_tag 'C', name: 'action', value: 'clear', class: 'btn btn-clear' %>
+        <%= button_tag '÷', name: 'action', value: 'divide', class: 'btn btn-operator' %>
+        <%= button_tag '×', name: 'action', value: 'multiply', class: 'btn btn-operator' %>
+        <%= button_tag '-', name: 'action', value: 'subtract', class: 'btn btn-operator' %>
+
+        <!-- Row 2: 7, 8, 9, + -->
+        <%= button_tag '7', name: 'action', value: 'digit_7', class: 'btn btn-number' %>
+        <%= button_tag '8', name: 'action', value: 'digit_8', class: 'btn btn-number' %>
+        <%= button_tag '9', name: 'action', value: 'digit_9', class: 'btn btn-number' %>
+        <%= button_tag '+', name: 'action', value: 'add', class: 'btn btn-operator' %>
+
+        <!-- Row 3: 4, 5, 6 -->
+        <%= button_tag '4', name: 'action', value: 'digit_4', class: 'btn btn-number' %>
+        <%= button_tag '5', name: 'action', value: 'digit_5', class: 'btn btn-number' %>
+        <%= button_tag '6', name: 'action', value: 'digit_6', class: 'btn btn-number' %>
+
+        <!-- Row 4: 1, 2, 3 -->
+        <%= button_tag '1', name: 'action', value: 'digit_1', class: 'btn btn-number' %>
+        <%= button_tag '2', name: 'action', value: 'digit_2', class: 'btn btn-number' %>
+        <%= button_tag '3', name: 'action', value: 'digit_3', class: 'btn btn-number' %>
+
+        <!-- Row 5: 0, ., = -->
+        <%= button_tag '0', name: 'action', value: 'digit_0', class: 'btn btn-number btn-zero' %>
+        <%= button_tag '.', name: 'action', value: 'decimal', class: 'btn btn-number' %>
+        <%= button_tag '=', name: 'action', value: 'equals', class: 'btn btn-equals' %>
+      </div>
+    <% end %>
+  </div>
+</div>
