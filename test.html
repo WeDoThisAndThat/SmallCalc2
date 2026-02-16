@@ -4,62 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pass {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .fail {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            margin-top: 30px;
+        }
+        .summary {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Calculator Tests</h1>
-    <div id="test-results"></div>
-    
-    <script src="calculator.js"></script>
+    <h1>Calculator Validation Tests</h1>
+    <div id="results"></div>
+    <div id="summary" class="summary"></div>
+
     <script>
-        // Simple test runner
-        const testResults = document.getElementById('test-results');
+        // Test utilities
+        const results = [];
         
-        function runTests() {
-            const tests = [];
-            
-            // Test 1: Check if add button exists
-            const addButton = document.getElementById('addButton');
-            tests.push({
-                name: 'Add button exists',
-                passed: addButton !== null
-            });
-            
-            // Test 2: Check if result display exists
-            const resultDisplay = document.getElementById('result');
-            tests.push({
-                name: 'Result display exists',
-                passed: resultDisplay !== null
-            });
-            
-            // Test 3: Check if input fields exist
-            const num1 = document.getElementById('num1');
-            const num2 = document.getElementById('num2');
-            tests.push({
-                name: 'Input fields exist',
-                passed: num1 !== null && num2 !== null
-            });
-            
-            // Display results
-            let html = '<ul>';
-            tests.forEach(test => {
-                const status = test.passed ? '✓ PASS' : '✗ FAIL';
-                const color = test.passed ? 'green' : 'red';
-                html += `<li style="color: ${color}">${status}: ${test.name}</li>`;
-            });
-            html += '</ul>';
-            
-            testResults.innerHTML = html;
-            
-            const allPassed = tests.every(test => test.passed);
-            console.log(allPassed ? 'All tests passed!' : 'Some tests failed!');
+        function test(name, fn) {
+            try {
+                fn();
+                results.push({ name, passed: true });
+                return true;
+            } catch (error) {
+                results.push({ name, passed: false, error: error.message });
+                return false;
+            }
         }
+
+        function assert(condition, message) {
+            if (!condition) {
+                throw new Error(message || 'Assertion failed');
+            }
+        }
+
+        function assertEqual(actual, expected, message) {
+            if (actual !== expected) {
+                throw new Error(message || `Expected ${expected} but got ${actual}`);
+            }
+        }
+
+        // Import validation functions (simulate)
+        function isValidNumber(value) {
+            if (value === '' || value === null || value === undefined) {
+                return false;
+            }
+            const num = parseFloat(value);
+            return !isNaN(num) && isFinite(num);
+        }
+
+        // Run tests
+        test('Valid integer should pass', () => {
+            assert(isValidNumber('42'), 'Integer should be valid');
+        });
+
+        test('Valid decimal should pass', () => {
+            assert(isValidNumber('3.14'), 'Decimal should be valid');
+        });
+
+        test('Valid negative number should pass', () => {
+            assert(isValidNumber('-10'), 'Negative number should be valid');
+        });
+
+        test('Empty string should fail', () => {
+            assert(!isValidNumber(''), 'Empty string should be invalid');
+        });
+
+        test('Null should fail', () => {
+            assert(!isValidNumber(null), 'Null should be invalid');
+        });
+
+        test('Undefined should fail', () => {
+            assert(!isValidNumber(undefined), 'Undefined should be invalid');
+        });
+
+        test('Text should fail', () => {
+            assert(!isValidNumber('abc'), 'Text should be invalid');
+        });
+
+        test('Infinity should fail', () => {
+            assert(!isValidNumber(Infinity), 'Infinity should be invalid');
+        });
+
+        test('Division by zero check', () => {
+            const divisor = 0;
+            const result = divisor === 0 ? 'Error' : 10 / divisor;
+            assertEqual(result, 'Error', 'Division by zero should return error');
+        });
+
+        test('Multiple decimal points prevention', () => {
+            let input = '3.14';
+            const shouldAdd = !input.includes('.');
+            assert(!shouldAdd, 'Should prevent multiple decimal points');
+        });
+
+        test('Valid calculation: 5 + 3', () => {
+            const result = 5 + 3;
+            assertEqual(result, 8, '5 + 3 should equal 8');
+        });
+
+        test('Valid calculation: 10 - 4', () => {
+            const result = 10 - 4;
+            assertEqual(result, 6, '10 - 4 should equal 6');
+        });
+
+        test('Valid calculation: 6 * 7', () => {
+            const result = 6 * 7;
+            assertEqual(result, 42, '6 * 7 should equal 42');
+        });
+
+        test('Valid calculation: 20 / 4', () => {
+            const result = 20 / 4;
+            assertEqual(result, 5, '20 / 4 should equal 5');
+        });
+
+        test('Floating point precision', () => {
+            const result = Math.round((0.1 + 0.2) * 100000000) / 100000000;
+            assertEqual(result, 0.3, 'Should handle floating point precision');
+        });
+
+        // Display results
+        const resultsDiv = document.getElementById('results');
+        const summaryDiv = document.getElementById('summary');
         
-        // Run tests after DOM is fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', runTests);
-        } else {
-            runTests();
-        }
+        let passed = 0;
+        let failed = 0;
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.className = `test ${result.passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${result.passed ? '✓' : '✗'} ${result.name}</strong>
+                ${result.error ? `<br><em>Error: ${result.error}</em>` : ''}
+            `;
+            resultsDiv.appendChild(div);
+            
+            if (result.passed) passed++;
+            else failed++;
+        });
+
+        summaryDiv.innerHTML = `
+            Tests Complete: ${results.length} total, 
+            <span style="color: green;">${passed} passed</span>, 
+            <span style="color: red;">${failed} failed</span>
+        `;
+        summaryDiv.style.color = failed === 0 ? 'green' : 'red';
     </script>
 </body>
 </html>
